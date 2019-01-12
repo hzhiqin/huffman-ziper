@@ -67,7 +67,6 @@ class Controller:
                 num = int.from_bytes(compressed.read(4), byteorder)
                 freq_table[ch] = num
             hufftree = HuffTree.build_tree(freq_table)
-            print(hufftree.get_codebook())
             data = compressed.read()
 
         bin_data = ["{0:b}".format(abyte).rjust(8, "0") for abyte in data]
@@ -76,18 +75,22 @@ class Controller:
             del bin_data[-1]
         else:
             bits_num = int(bin_data[-2], 2)
-            last = 
+            last = bin_data[-1][(8 - bits_num):]
+            del bin_data[-1]
+            del bin_data[-1]
+            bin_data.append(last)
+        bin_data = "".join(bin_data)
 
         # recover
         cur = hufftree.root
-        with open(outfile, "w") as recover_out:
+        with open(outfile, "wb") as recover_out:
             for bit in bin_data:
                 if bit == "0":
                     cur = cur.left
                 else:
                     cur = cur.right
                 if cur.is_leaf:
-                    recover_out.write(cur.value.decode())
+                    recover_out.write(cur.value)
                     cur = hufftree.root
 
 

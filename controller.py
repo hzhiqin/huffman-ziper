@@ -40,7 +40,7 @@ class Controller:
 
         with open(outfile, "wb") as out:
             # number of characters in file
-            out.write(len(codebook).to_bytes(1, byteorder))
+            out.write((len(codebook) - 1).to_bytes(1, byteorder))
             for bin_key, times in freq_table.items():  # times supports only 32-bit large
                 out.write(bin_key)
                 out.write(times.to_bytes(4, byteorder))
@@ -61,7 +61,7 @@ class Controller:
     def _decompress(infile, outfile):
         freq_table = {}
         with open(infile, "rb") as compressed:
-            ch_num = ord(compressed.read(1))
+            ch_num = ord(compressed.read(1)) + 1
             for _ in range(ch_num):
                 ch = compressed.read(1)
                 num = int.from_bytes(compressed.read(4), byteorder)
